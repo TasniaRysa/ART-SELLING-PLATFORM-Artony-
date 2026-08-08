@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <!--style-->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  </style>
+<body>
+
+    <div id="navbar" class="opacity-0 animate-fade-in shadow-lg fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm border-b border-bblack/30 h-14 w-full flex items-center px-6 gap-4">
+  
+  <span class="text-white font-semibold tracking-widest mr-auto">ARTONY</span>
+
+  
+
+ 
+
+  <a href="" class="text-white/70 text-sm hover:text-white transition">About us</a>
+  
+<div class="avatar">
+  <div class="w-12 h-12 rounded-full">
+    <img src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"  class="w-12 h-12 rounded-full">
+  </div>
+</div>
+
+
+
+</div>
+<div class="h-28 w-full"></div>
+
+ 
+    <div id="bodycontainer" class="flex relative">
+        <div id="left" style="background-image: url('https://i.pinimg.com/1200x/8e/9c/1b/8e9c1b9596368d80c25d66691e86eda5.jpg');" class=" bg-cover bg-center w-1/2 h-screen">
+            
+
+        </div>
+
+        <div id="right" style="background-image: url('https://i.pinimg.com/736x/c2/41/2b/c2412bd884ee89d3e3037cfd5ba20f3b.jpg');" class="bg-cover bg-center h-screen w-1/2">
+
+
+        </div>
+
+        
+
+</div>
+
+        <div id="mainfeed" class="h-screen overflow-y-auto rounded w-5/6">
+          <div 
+    id="postBox"
+    class="w-full   transition-all duration-500 rounded ease-in-out"
+  >
+    <form id="forcontent" enctype="multipart/form-data" method="POST"
+      class="mt-3 bg-white/20 rounded-md p-4 flex flex-col gap-3"
+    >
+
+    <flex>
+    <select name="postcriteria" class="select select-bordered rounded select-sm m-1 w-1/5 bg-white/30">
+  <option value="">Select post type</option>
+  <option value="sellerpost">Seller Post</option>
+  <option value="buyerpost">Buyer Post</option>
+  <option value="general">General</option>
+  <option value="question">Question</option>
+  <option value="community">Community Post</option>
+</select>
+<input type="text" name="vibe" placeholder="Vibe" 
+  class="input input-bordered input-sm w-1/5 m-1 bg-white/30  rounded  text-sm">
+
+<input type="text" name="artmedium" placeholder="Art medium" 
+  class="input input-bordered input-sm  rounded  w-1/5 m-1 bg-white/30 text-sm">
+
+<input type="text" name="sellerlocation" placeholder="Seller location" id="sellerlocation"
+  class="input input-bordered input-sm bg-white/30 text-sm  rounded  transition-all duration-500 ease-in-out overflow-hidden max-w-0 opacity-0 p-0 border-0">
+
+<input type="text" name="keywords" placeholder="Keywords" 
+  class="input input-bordered input-sm w-1/5 m-1  rounded  bg-white/30 text-sm">
+
+
+ </flex>
+
+      <textarea
+        name="text"
+        placeholder="Write something..."
+        class="textarea textarea-bordered w-full bg-white/30"
+      ></textarea>
+
+      <input 
+        type="file"
+        name="media"
+        class="file-input file-input-bordered w-full bg-white/30"
+      >
+
+      <button class="btn btn-primary border border-black/30 bg-gradient-to-r from-white/20 to-blue-400/20 hover:from-white/30 hover:to-blue-400/30">
+        Post
+      </button>
+
+    </form>
+    
+  </div>
+  <div id="contents">
+            THIS IS SUPPOSED TO BE THE FEED PAGE. IT WILL HAVE A FEED OF ARTWORKS, ARTISTS, GALLERIES, AND AUCTIONS. IT WILL ALSO HAVE A SEARCH BAR AND FILTERS. IT WILL ALSO HAVE A SCAN PHOTO FOR SUGGESTIONS FEATURE. IT WILL ALSO HAVE AN ABOUT US SECTION.
+    </div>
+
+        </div>
+    </div>
+
+    <script>
+      document.getElementById("forcontent").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const res = await fetch("/contentpost", { method: "POST", body: formData });
+  if (res.ok) {
+    this.reset();
+   // loadposts();
+  }
+});
+    async function postloader(){
+       const res= await fetch('/post',{
+            method:'GET'
+        })
+        const posts= await res.json();
+        renderpost(posts);
+     }
+
+
+      function renderpost(post)
+{
+  const list = document.getElementById("contents");
+
+  list.innerHTML = post.map(p => {
+    let media = "";
+    if (p.mediatype === "image") {
+      media = `<img src="${p.imgurl}" class="w-full h-auto rounded-md">`;
+    } else if (p.mediatype === "video") {
+      media = `<video controls class="w-full h-auto rounded-md">
+        <source src="${p.imgurl}" type="video/mp4">
+      </video>`;
+    }
+
+    return `
+      <div class="bg-white/20 rounded-md p-3 flex flex-col gap-2">
+        ${p.username ? `<div class="border border-black bg-black/50"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>` : ""}
+        ${p.text ? `<p>${p.text}</p>` : ""}
+        ${media}
+        <button class="interestBtn btn btn-sm btn-outline w-fit" data-postid="${p.id}">
+          Interested
+        </button>
+        <span class="text-xs opacity-60">${p.timestamp}</span>
+      </div>`;
+  }).join("");
+
+  document.querySelectorAll(".interestBtn").forEach(btn => {
+    btn.addEventListener("click", async function () {
+      const postid = this.dataset.postid;
+      const res = await fetch("/interest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postid })
+      });
+      if (res.ok) {
+        this.textContent = "Interested ✓";
+        this.disabled = true;
+      }
+    });
+  });
+}
+  postloader();
+    </script>
+  
+
+</body>
+
+
+  

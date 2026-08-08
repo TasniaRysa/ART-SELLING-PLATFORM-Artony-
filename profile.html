@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<head>
+         <title>feed</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Story+Script&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col gap-2 font-serif">
+
+    <div id="bglayering" class="m-8 p-4 rounded-md">
+
+    <div id="navbar" class="navbar bg-white/20 backdrop-blur-md shadow-sm rounded-md ">
+  <div class="flex-none">
+    <button class="btn btn-square btn-ghost">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg>
+    </button>
+  </div>
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl ">PROFILE</a>
+  </div>
+  <div class="flex-none">
+    <button class="btn btn-square btn-ghost">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path> </svg>
+    </button>
+  </div>
+</div>
+    
+    <div id="container" class="bg-white/20 backdrop-blur-md rounded-md ml-16 mt-16 mr-16 mb-4 p-2">
+      
+           <div class="relative w-full m-5 mr-56 flex flex-col items-center p-6 gap-4">
+             <div id="infoholder" class="text-center w-3/4 mt-20 ml-20 mr-32 pr-4 p-2 rounded-md bg-gradient-to-r from-white/10 to-[#e6e6fa8f] shadow-lg border border-black/20 flex flex-col gap-2">
+                <h id="name">Tasnia Rysa</h>
+                <p id="bio">an emerging artist</p>
+                <div class="w-full bg-gradient-to-r from-white/20 to-blue-400/20 flex flex-col gap-1 p-2 rounded-md">
+                  <ul id="workinfo">
+                  <li >ART GRADUATE FROM DU</li>  
+                   <li> FAMOUS PORTRAIT PAINTER</li>
+                  <li>  OPEN FOR COMMISSIONS</li>
+                  </ul>
+                </div>
+             </div>
+             
+            </div>
+            <div id="dp" class="w-56 h-56 ml-8 mt-20 bg-white/20 rounded-md shadow-lg border-black/20 absolute top-5 left-20 p-2">
+                <img id="dpimg" src="https://scontent.fdac191-1.fna.fbcdn.net/v/t39.30808-6/687482392_1494633785630357_8525069656572596740_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGq9B8WTYHQkN5SXq5nfZTcDgNhfX87D74OA2F9fzsPvv-uFJWA9zl5Jzcbiesa1I7a-IOI0ooGhsIHgyRQH5st&_nc_ohc=jtpvyZxkjbwQ7kNvwE4Y2Ca&_nc_oc=AdoPBTH4MKLn2GOEpvcQiCYEtdt1rDghTClcERUOFCqaupxmMfKL8efIMeGf_c4EcJY&_nc_zt=23&_nc_ht=scontent.fdac191-1.fna&_nc_gid=pskKydsAs8-pQQGcjYKA-w&_nc_ss=7b2a8&oh=00_Af6A7UwWoFSuzTgl6TmDX100DqL7vHMrxpv3EpArAQUEow&oe=6A14AD47" class="w-92 h-92 rounded-md object-cover">
+            </div>
+
+            <div class="flex w-full">
+  
+
+
+
+
+
+
+            <div id="downbar" class="m-4 grid grid-cols-2 bg-white/10 rounded-md w-full p-2">
+        <div id="description" class="border-r border-black m-1 flex flex-col gap-2 p-2 justify-center items-center">
+            <h>preferences</h>
+            <div class="text-left">
+              <ul id="pref">
+            <li><p  class="text-left">water color</p></li>
+            <li><p  class="text-left">acrylic</p></li>
+            </ul>
+            </div>
+        </div>
+        <div id="links" class="flex flex-col gap-2 items-center justify-center m-1 p-2 ">
+            <h>links</h>
+             <div class="text-left">
+            <a href="https://pin.it/1tRO0vYQ8" class="text-underline text-left">pinterest</a>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    
+    
+
+
+    </div>
+
+    <div id="posts" class="bg-white/10 backdrop-blur-md rounded-md p-2 flex flex-col gap-4 items-center justify-center">
+  
+  <h>Timeline</h>
+
+  <!-- PLUS BUTTON (NOT SUBMIT) -->
+  <button
+    id="togglePostBox"
+    type="button"
+    class="w-full bg-gradient-to-r from-white/20 to-blue-400/20 border border-black/30 rounded-md p-3 text-xl"
+  >
+    +
+  </button>
+
+  <!-- SLIDING BOX -->
+  <div 
+    id="postBox"
+    class="w-full overflow-hidden max-h-0 transition-all duration-500 ease-in-out"
+  >
+    <form id="forcontent" enctype="multipart/form-data" method="POST"
+      class="mt-3 bg-white/20 rounded-md p-4 flex flex-col gap-3"
+    >
+<flex>
+    <select name="postcriteria" class="select select-bordered select-sm m-1 w-1/5 bg-white/30">
+  <option value="">Select post type</option>
+  <option value="sellerpost">Seller Post</option>
+  <option value="buyerpost">Buyer Post</option>
+  <option value="general">General</option>
+  <option value="question">Question</option>
+  <option value="community">Community Post</option>
+</select>
+
+
+<input type="text" name="vibe" placeholder="Vibe" 
+  class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
+
+<input type="text" name="artmedium" placeholder="Art medium" 
+  class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
+
+<input type="text" name="sellerlocation" placeholder="Seller location" id="sellerlocation"
+  class="input input-bordered input-sm bg-white/30 text-sm transition-all duration-500 ease-in-out overflow-hidden max-w-0 opacity-0 p-0 border-0">
+
+<input type="text" name="keywords" placeholder="Keywords" 
+  class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
+
+
+  <textarea name="text" placeholder="Write something..." 
+  class="textarea textarea-bordered w-full m-1 bg-white/30 text-sm"></textarea>
+
+
+
+
+</flex>
+
+
+      
+
+      <input 
+        type="file"
+        name="media"
+        class="file-input file-input-bordered w-full bg-white/30"
+      >
+
+      <button class="btn btn-primary">
+        Post
+      </button>
+
+    </form>
+  </div>
+
+</div>
+
+<div id="postList" class="flex flex-col gap-3 w-full"></div>
+<script>
+  const toggleBtn = document.getElementById("togglePostBox");
+  const postBox = document.getElementById("postBox");
+
+  let open = false;
+
+  toggleBtn.addEventListener("click", () => {
+    open = !open;
+
+    if (open) {
+      postBox.classList.remove("max-h-0");
+      postBox.classList.add("max-h-[500px]");
+    } else {
+      postBox.classList.remove("max-h-[500px]");
+      postBox.classList.add("max-h-0");
+    }
+
+  });
+
+ 
+
+//loadProfile();
+</script>
+<script>
+
+  
+ 
+ async function loadprofile()
+ {
+
+   const params = new URLSearchParams(window.location.search);
+   const targetId = params.get("userid");
+
+   const url = targetId ? `/profileget?userid=${targetId}` : "/profile";
+   const res = await fetch("/profile",{
+    method:"GET"
+  })
+ const data= await res.json();
+ let {id,userid,username,bio,workinfo,preferences,links,dp}=data;
+ workinfo=JSON.parse(workinfo);
+  preferences=JSON.parse(preferences);
+  links=JSON.parse(links);
+ document.getElementById("name").textContent=username;
+document.getElementById("bio").textContent=bio;
+document.getElementById("workinfo").innerHTML=workinfo.map(info=>`<li>${info}</li>`).join("");
+document.getElementById("pref").innerHTML=preferences.map(info=>`<li>${info}</li>`).join("");
+document.getElementById("links").innerHTML=links.map(info=>`<li>${info}</li>`).join("");
+if (dp) {
+  document.getElementById("dpimg").src = dp;
+}
+ }
+
+
+ document.getElementById("forcontent").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const res = await fetch("/contentpost", { method: "POST", body: formData });
+  if (res.ok) {
+    this.reset();
+    loadposts();
+  }
+});
+
+ async function loadposts()
+ {
+  const res=await fetch("/showpost",{
+    method:"GET"
+  })
+
+  let post=await res.json();
+  renderpost(post);
+}
+  function renderpost(post)
+{
+  const list = document.getElementById("postList");
+
+  list.innerHTML = post.map(p => {
+    let media = "";
+    if (p.mediatype === "image") {
+      media = `<img src="${p.imgurl}" class="w-full h-auto rounded-md">`;
+    } else if (p.mediatype === "video") {
+      media = `<video controls class="w-full h-auto rounded-md">
+        <source src="${p.imgurl}" type="video/mp4">
+      </video>`;
+    }
+
+    return `
+      <div class="bg-white/20 rounded-md p-3 flex flex-col gap-2">
+        ${p.username ? `<div class="border border-black bg-black/50"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>` : ""}
+        ${p.text ? `<p>${p.text}</p>` : ""}
+        ${media}
+        <button class="interestBtn btn btn-sm btn-outline w-fit" data-postid="${p.id}">
+          Interested
+        </button>
+        <span class="text-xs opacity-60">${p.timestamp}</span>
+      </div>`;
+  }).join("");
+
+  document.querySelectorAll(".interestBtn").forEach(btn => {
+    btn.addEventListener("click", async function () {
+      const postid = this.dataset.postid;
+      const res = await fetch("/interest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postid })
+      });
+      if (res.ok) {
+        this.textContent = "Interested ✓";
+        this.disabled = true;
+      }
+    });
+  });
+}
+
+  document.querySelector('select[name="postcriteria"]').addEventListener("change", function() {
+  const sellerField = document.getElementById("sellerlocation");
+  if (this.value === "sellerpost") {
+    sellerField.classList.remove("hidden");
+  } else {
+    sellerField.classList.add("hidden");
+  }
+});
+
+document.querySelector('select[name="postcriteria"]').addEventListener("change", function() {
+  const sellerField = document.getElementById("sellerlocation");
+  if (this.value === "sellerpost") {
+    sellerField.classList.remove("max-w-0", "opacity-0", "p-0", "border-0");
+    sellerField.classList.add("max-w-xs", "opacity-100", "px-3", "py-1", "border");
+  } else {
+    sellerField.classList.remove("max-w-xs", "opacity-100", "px-3", "py-1", "border");
+    sellerField.classList.add("max-w-0", "opacity-0", "p-0", "border-0");
+  }
+});
+ 
+
+
+ loadprofile();
+ loadposts();
+</script>
+   </body>

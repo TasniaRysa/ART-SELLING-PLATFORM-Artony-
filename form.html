@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<head>
+        
+        <title>sign in form</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Story+Script&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+    </head>
+<body>
+     
+    <div class="fixed inset-0 rounded-md flex items-center justify-center m-10 border border-white border-5 bg-black/10 backdrop-blur-[1px]">
+
+            <!--img id="dpimg" src="https://via.placeholder.com/150?text=Upload"-->
+           
+        
+        <div>
+                <img src="https://scontent.fdac191-1.fna.fbcdn.net/v/t39.30808-6/687482392_1494633785630357_8525069656572596740_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGq9B8WTYHQkN5SXq5nfZTcDgNhfX87D74OA2F9fzsPvv-uFJWA9zl5Jzcbiesa1I7a-IOI0ooGhsIHgyRQH5st&_nc_ohc=jtpvyZxkjbwQ7kNvwE4Y2Ca&_nc_oc=AdoPBTH4MKLn2GOEpvcQiCYEtdt1rDghTClcERUOFCqaupxmMfKL8efIMeGf_c4EcJY&_nc_zt=23&_nc_ht=scontent.fdac191-1.fna&_nc_gid=pskKydsAs8-pQQGcjYKA-w&_nc_ss=7b2a8&oh=00_Af6A7UwWoFSuzTgl6TmDX100DqL7vHMrxpv3EpArAQUEow&oe=6A14AD47" class="w-92 h-92 rounded-md object-cover">
+            </div>
+        <div class="shadow-lg rounded-md bg-white/30 flex flex-col items-center justify-center p-8 border border-white">
+           
+        <h1 class="text-3xl m-5">please fillup your profile info</h1>
+        
+        <form action="/profileinfo" method="POST">
+                     <div id="dp" class="w-28 h-28 ml-8 mt-20 bg-white rounded-md shadow-lg border-black/20 absolute top-0 left-5 p-2 cursor-pointer">
+            <input type="file" id="dpinput" accept="image/*">
+            <input type="hidden" id="dpUrl" name="dp" value="">
+              </div>
+            <h6>add a profile picture so people can recognize you</h6>
+        <input type="text" placeholder="Bio" name="bio" class=" rounded-md border border-black m-5 p-2">
+            <!--h6>add a profile picture so people can recognize you</h6-->
+        <div id="workinfocontainer">
+        <input type="text" placeholder="workinfo" name="workinfo[]" class=" rounded-md border border-black m-5 p-2">
+        <button type="button" id="moreworkinfo" class="border bg-white/75 border-black m-5 p-2 rounded-md">+</button>
+        <br>
+
+        </div>
+        <div id="prefcontainer">
+        <input type="text" placeholder=" art preferences" name="preferences[]" class=" rounded-md border border-black m-5 p-2">
+        <button type="button" id="morepref" class="border bg-white/75 border-black m-5 p-2 rounded-md">+</button>
+        <br>
+        </div>
+        <div id="linkcontainer">
+        <input type="text" placeholder="links" name="links[]" class=" rounded-md border border-black m-5 p-2">
+        <button type="button" id="morelink" class="border bg-white/75 border-black m-5 p-2 rounded-md">+</button>
+        <br>
+        </div>
+        <button type="submit" onclick="changewindow()" class="border bg-white/75 border-black m-5 p-2 rounded-md">SIGN IN</button>
+        </form>
+
+
+        <a href="/skipform">Don't show this again</a>
+        </div>
+    </div>
+    <div class="grid grid-cols-2">
+    <div>
+    <div style="background-image: url('https://i.pinimg.com/1200x/8e/9c/1b/8e9c1b9596368d80c25d66691e86eda5.jpg');" class="bg-cover bg-center h-screen"> 
+    
+        
+        
+        </div>
+        
+
+       
+        
+    </div>
+     
+<div>
+    <img src="https://i.pinimg.com/736x/c2/41/2b/c2412bd884ee89d3e3037cfd5ba20f3b.jpg" >
+</div>
+        </div>
+
+
+
+
+
+     <script>
+       
+
+
+
+
+        function changewindow() {
+            window.location.href = "form.html";
+        }
+
+
+        document.getElementById("dp").addEventListener("click",()=>{
+            document.getElementById("dpinput").click();
+        });
+
+       document.getElementById("dpinput").addEventListener("change", async (event) => {
+    const file = document.getElementById("dpinput").files[0];
+    if (!file) return;
+
+    //document.getElementById("dpinput").src = URL.createObjectURL(file);
+
+    const formData = new FormData();
+    formData.append("dp", file);
+
+    const res = await fetch("/upload", { method: "POST", body: formData });
+    const data = await res.json();
+
+    document.getElementById("dpUrl").value = data.imgurl;
+});
+
+        document.getElementById("moreworkinfo").addEventListener("click",()=>{
+            const container=document.getElementById(("workinfocontainer"));
+            const newInput=document.createElement("input");
+            newInput.type="text";
+            newInput.placeholder="workinfo";
+            newInput.name="workinfo";
+            container.appendChild(newInput);
+            container.appendChild(document.createElement("br"));
+            container.appendChild(document.createElement("br"));
+
+        })
+
+        document.getElementById("morepref").addEventListener("click",()=>{
+            const container=document.getElementById(("prefcontainer"));
+            const newInput=document.createElement("input");
+            newInput.type="text";
+            newInput.placeholder="art preferences";
+            newInput.name="preferences";
+            container.appendChild(newInput);
+            container.appendChild(document.createElement("br"));
+            container.appendChild(document.createElement("br"));})
+
+
+             document.getElementById("morelink").addEventListener("click",()=>{
+            const container=document.getElementById(("linkcontainer"));
+            const newInput=document.createElement("input");
+            newInput.type="text";
+            newInput.placeholder="links";
+            newInput.name="links";
+            container.appendChild(newInput);
+            container.appendChild(document.createElement("br"));
+            container.appendChild(document.createElement("br"));
+
+        }
+    )
+     </script>   
+       
+</body>

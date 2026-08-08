@@ -1,0 +1,72 @@
+body{
+   background: linear-gradient(to right, #567788aa, #2b7f96dc);
+   font-family: "Nunito";
+   overflow-x: hidden;
+      cursor: default;
+      
+  
+  
+}
+
+#mainfeed{
+  /*background: linear-gradient(to right,rgba(137, 136, 136, 0.861), #2b7f96be);*/
+background: linear-gradient(to right, rgba(137, 136, 136, 0.881), rgba(255, 255, 255, 0.772));
+   position: absolute;
+  justify-content: center;
+  position:fixed;
+  top:12%;;
+  left:7%;           /* distance from left of wrapper */
+  
+  padding: 10px;
+  margin: 10px;
+  border-radius: 1px;
+  
+   border-color:rgb(193, 205, 205);
+   border-width:1px;
+   box-shadow: 40px 40px 40px 40px rgba(68, 68, 88, 0.3);
+   
+}
+h{
+    font-size:50px;
+}
+#bglayering {
+  position: relative;
+}
+
+#bglayering::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("https://i.pinimg.com/1200x/02/44/2f/02442fd1c5eaa108ee9c9effbcd31151.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4; /* change this */
+  z-index: 0;
+}
+h1{
+    font-size: 40px;
+}
+
+/* keep content above the bg */
+#bglayering > * {
+  position: relative;
+  z-index: 1;
+}
+#top{
+ border-radius: 5px;
+   border-style: outset;
+   background-size: 50%;
+   border-color:rgb(54, 124, 124);
+   border-width:1px;
+   box-shadow: 20px 20px 10px 10px rgba(68, 68, 88, 0.3);
+   background-color:rgb(191, 211, 228);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 2s ease forwards;
+}
+html { scroll-behavior: smooth; }
