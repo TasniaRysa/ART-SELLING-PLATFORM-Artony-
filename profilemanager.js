@@ -108,6 +108,19 @@ db.exec(
    `
 );
 
+db.exec(
+    `CREATE TABLE IF NOT EXISTS cartinfo(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+   postid INTEGER NOT NULL,
+   userid INTEGER NOT NULL,
+   timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+   UNIQUE(userid, postid),
+   FOREIGN KEY(postid) REFERENCES posts(id),
+   FOREIGN KEY(userid) REFERENCES login(id)
+)
+   `
+);
+//db.exec(`DROP TABLE IF EXISTS cartinfo`);
 
 if(!fs.existsSync("uploads"))
 {fs.mkdirSync("uploads",{recursive:true});}
@@ -127,6 +140,35 @@ app.post("/upload",upload.single("dp"),(req,res)=>{
     )
     db.prepare("UPDATE profileinfo SET dp=? WHERE userid=?").run("/uploads/"+req.file.filename,req.session.userId);
 })
+
+
+app.get("/cartitems", (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "not logged in" });
+    }
+    const items = db.prepare(`
+        SELECT cartinfo.postid, posts.text, posts.imgurl, posts.mediatype
+        FROM cartinfo
+        JOIN posts ON cartinfo.postid = posts.id
+        WHERE cartinfo.userid = ?
+        ORDER BY cartinfo.timestamp DESC
+    `).all(req.session.userId);
+
+    res.json(items);
+});
+
+app.post("/removefromcart", (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "not logged in" });
+    }
+    const { postid } = req.body;
+    if (!postid) {
+        return res.status(400).json({ message: "postid is required" });
+    }
+    db.prepare("DELETE FROM cartinfo WHERE userid = ? AND postid = ?")
+        .run(req.session.userId, postid);
+    res.json({ removed: true });
+});
 app.post("/contentpost", upload.single("media"), (req, res) => {
     const text = req.body.text || null;
     const postcriteria = req.body.postcriteria || null;
@@ -150,6 +192,22 @@ app.post("/contentpost", upload.single("media"), (req, res) => {
 
     res.json({ message: "Post created successfully" });
 });
+
+app.post("/addtocart", (req, res) => {
+
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "not logged in" });
+    }
+    const { postid } = req.body;
+    if (!postid) {
+        return res.status(400).json({ message: "postid is required" });
+    }
+
+    console.log("Attempting insert with userid:", req.session.userId, "postid:", postid);
+    db.prepare("INSERT INTO cartinfo(userid, postid) VALUES (?,?)")
+            .run(req.session.userId, postid);
+        return res.json({ interested: true });
+})
 
 
 app.post("/interest", (req, res) => {

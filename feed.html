@@ -8,7 +8,29 @@
   <!--style-->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  </style>
+  <style>:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --text-sm: 0.5rem;
+  --text-md: 2rem;
+  --text-lg: 3rem;
+
+  --shadow-low: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-mid: 0 8px 20px rgba(0,0,0,0.3);
+  --shadow-high: 0 20px 50px rgba(0,0,0,0.45);
+}
+#mainfeed { border-radius: var(--radius-md); box-shadow: var(--shadow-high); }
+#forcontent { border-radius: var(--radius-md); box-shadow: var(--shadow-low); }
+#contents > div, #cartList > div { border-radius: var(--radius-md); box-shadow: var(--shadow-low); }
+#contents > div:hover, #cartList > div:hover { box-shadow: var(--shadow-mid); }</style>
 <body>
 
     <div id="navbar" class="opacity-0 animate-fade-in shadow-lg fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm border-b border-bblack/30 h-14 w-full flex items-center px-6 gap-4">
@@ -19,8 +41,14 @@
 
  
 
-  <a href="" class="text-white/70 text-sm hover:text-white transition">About us</a>
   
+  <a href="" class="text-white/70 text-sm hover:text-white transition">About us</a>
+
+<button id="cartBtn" class="text-white/70 text-sm hover:text-white transition text-underline">
+   Cart
+</button>
+
+
 <div class="avatar">
   <div class="w-12 h-12 rounded-full">
     <img src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"  class="w-12 h-12 rounded-full">
@@ -51,7 +79,7 @@
         <div id="mainfeed" class="h-screen overflow-y-auto rounded w-5/6">
           <div 
     id="postBox"
-    class="w-full   transition-all duration-500 rounded ease-in-out"
+    class="w-full h-1/2 transition-all duration-500 rounded ease-in-out"
   >
     <form id="forcontent" enctype="multipart/form-data" method="POST"
       class="mt-3 bg-white/20 rounded-md p-4 flex flex-col gap-3"
@@ -100,14 +128,78 @@
     </form>
     
   </div>
-  <div id="contents">
+  <div id="contents" class="flex flex-col p-3 w-full justify-center items-center">
             THIS IS SUPPOSED TO BE THE FEED PAGE. IT WILL HAVE A FEED OF ARTWORKS, ARTISTS, GALLERIES, AND AUCTIONS. IT WILL ALSO HAVE A SEARCH BAR AND FILTERS. IT WILL ALSO HAVE A SCAN PHOTO FOR SUGGESTIONS FEATURE. IT WILL ALSO HAVE AN ABOUT US SECTION.
-    </div>
+
+
+    <div id="cartList" class="hidden flex flex-col gap-3 w-full"></div>
 
         </div>
     </div>
 
     <script>
+
+
+      let cartOpen = false;
+
+document.getElementById("cartBtn").addEventListener("click", async function () {
+  cartOpen = !cartOpen;
+  const cartList = document.getElementById("cartList");
+  const contents = document.getElementById("contents");
+
+  if (cartOpen) {
+    contents.classList.add("hidden");
+    cartList.classList.remove("hidden");
+    await loadCart();
+  } else {
+    contents.classList.remove("hidden");
+    cartList.classList.add("hidden");
+  }
+});
+
+async function loadCart() {
+  const res = await fetch("/cartitems", { method: "GET" });
+  const items = await res.json();
+  renderCart(items);
+}
+
+function renderCart(items) {
+  const list = document.getElementById("cartList");
+
+  list.innerHTML = items.map(p => {
+    let media = "";
+    if (p.mediatype === "image") {
+      media = `<img src="${p.imgurl}" class="w-full h-auto rounded-md">`;
+    } else if (p.mediatype === "video") {
+      media = `<video controls class="w-full h-auto rounded-md">
+        <source src="${p.imgurl}" type="video/mp4">
+      </video>`;
+    }
+
+    return `
+      <div class="bg-white/20 rounded-md p-3 flex flex-col gap-2">
+        ${p.text ? `<p>${p.text}</p>` : ""}
+        ${media}
+        <button class="removeCartBtn btn btn-sm btn-outline w-fit" data-postid="${p.postid}">
+          Remove
+        </button>
+      </div>`;
+  }).join("");
+
+  document.querySelectorAll(".removeCartBtn").forEach(btn => {
+    btn.addEventListener("click", async function () {
+      const postid = this.dataset.postid;
+      const res = await fetch("/removefromcart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postid })
+      });
+      if (res.ok) {
+        loadCart();
+      }
+    });
+  });
+}
       document.getElementById("forcontent").addEventListener("submit", async function (e) {
   e.preventDefault();
   const formData = new FormData(this);
@@ -133,22 +225,40 @@
   list.innerHTML = post.map(p => {
     let media = "";
     if (p.mediatype === "image") {
-      media = `<img src="${p.imgurl}" class="w-full h-auto rounded-md">`;
+      media = `<img src="${p.imgurl}"  class="w-3/4 h-96 object-cover rounded-md">`;
     } else if (p.mediatype === "video") {
-      media = `<video controls class="w-full h-auto rounded-md">
+      media = `<video controls class="w-3/4 h-96 object-cover rounded-md">
         <source src="${p.imgurl}" type="video/mp4">
       </video>`;
     }
+    let btn="";
+
+    if(p.postcriteria === "sellerpost" ) {
+      btn += `<button class="cartbtn" data-postid="${p.id}" class="btn btn-sm btn-outline w-fit" >add to cart
+        </button>`;
+    }
 
     return `
-      <div class="bg-white/20 rounded-md p-3 flex flex-col gap-2">
-        ${p.username ? `<div class="border border-black bg-black/50"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>` : ""}
+
+   
+    <div class=" postui bg-white/20 rounded-md p-3 w-4/5 h-1/2 m-24 flex flex-col gap-2 items-center justify-center">
+        ${p.username ? `<div class="border border-white/30 shadow shadow-lg rounded bg-black/30"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>
+`:""}
+          <div id="tags" class="grid grid-cols-5 gap-2 text-sm">
+              <div id="postcriteria" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.postcriteria}</p></div>
+              <div id="artmedium" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.artmedium}</p></div>
+              <div id="vibe" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.vibe}</p></div>
+              <div id="keywords" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.keywords}</p></div>
+              </div>   
+     
+       
         ${p.text ? `<p>${p.text}</p>` : ""}
         ${media}
-        <button class="interestBtn btn btn-sm btn-outline w-fit" data-postid="${p.id}">
+        <button class="interestBtn btn btn-sm btn-outline w-fit bg-white/30 border-black/30" data-postid="${p.id}">
           Interested
         </button>
-        <span class="text-xs opacity-60">${p.timestamp}</span>
+        ${btn}
+        <span class="text-xs opacity-60 bg-black/30 border-black/10">${p.timestamp}</span>
       </div>`;
   }).join("");
 
@@ -162,6 +272,20 @@
       });
       if (res.ok) {
         this.textContent = "Interested ✓";
+        this.disabled = true;
+      }
+    });
+  });
+  document.querySelectorAll(".cartbtn").forEach(btn => {
+    btn.addEventListener("click", async function () {
+      const postid = this.dataset.postid;
+      const res = await fetch("/addtocart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postid })
+      });
+      if (res.ok) {
+        this.textContent = "added to cart";
         this.disabled = true;
       }
     });

@@ -3,9 +3,15 @@ body{
    font-family: "Nunito";
    overflow-x: hidden;
       cursor: default;
+
       
   
   
+}
+p
+{
+  padding: 4px;
+  margin: 4px;
 }
 
 #mainfeed{
