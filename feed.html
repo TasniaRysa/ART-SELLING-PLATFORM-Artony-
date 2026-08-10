@@ -81,52 +81,65 @@
     id="postBox"
     class="w-full h-1/2 transition-all duration-500 rounded ease-in-out"
   >
-    <form id="forcontent" enctype="multipart/form-data" method="POST"
-      class="mt-3 bg-white/20 rounded-md p-4 flex flex-col gap-3"
+  
+<form
+  id="forcontent"
+  enctype="multipart/form-data"
+  method="POST"
+  class="w-full rounded-2xl border border-white/30 bg-white/10 p-4 shadow-lg backdrop-blur-md"
+>
+  <!-- Top row -->
+  <div class="mb-3 flex items-center justify-between">
+    <h3 class="text-lg font-semibold text-gray-800">
+      Create a post
+    </h3>
+
+    <select
+      name="postcriteria"
+      class="select select-bordered select-sm rounded-lg border-white/30 bg-white/30 text-sm backdrop-blur-sm focus:border-blue-400 focus:outline-none"
     >
+      <option disabled selected>Post type</option>
+      <option value="public">Public</option>
+      <option value="friends">Friends</option>
+      <option value="private">Only me</option>
+    </select>
+  </div>
 
-    <flex>
-    <select name="postcriteria" class="select select-bordered rounded select-sm m-1 w-1/5 bg-white/30">
-  <option value="">Select post type</option>
-  <option value="sellerpost">Seller Post</option>
-  <option value="buyerpost">Buyer Post</option>
-  <option value="general">General</option>
-  <option value="question">Question</option>
-  <option value="community">Community Post</option>
-</select>
-<input type="text" name="vibe" placeholder="Vibe" 
-  class="input input-bordered input-sm w-1/5 m-1 bg-white/30  rounded  text-sm">
+  <!-- Text -->
+  <textarea
+    name="text"
+    placeholder="What's on your mind?"
+    class="textarea textarea-bordered min-h-32 w-full resize-none rounded-xl border-white/30 bg-white/20 text-base placeholder:text-gray-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/20"
+  ></textarea>
 
-<input type="text" name="artmedium" placeholder="Art medium" 
-  class="input input-bordered input-sm  rounded  w-1/5 m-1 bg-white/30 text-sm">
+  <!-- Bottom controls -->
+  <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-<input type="text" name="sellerlocation" placeholder="Seller location" id="sellerlocation"
-  class="input input-bordered input-sm bg-white/30 text-sm  rounded  transition-all duration-500 ease-in-out overflow-hidden max-w-0 opacity-0 p-0 border-0">
+    <!-- File input -->
+    <label
+      class="flex cursor-pointer items-center gap-2 rounded-lg border border-white/30 bg-white/20 px-3 py-2 text-sm text-gray-700 transition hover:bg-white/30"
+    >
+      <span class="text-lg">📎</span>
+      <span>Add media</span>
 
-<input type="text" name="keywords" placeholder="Keywords" 
-  class="input input-bordered input-sm w-1/5 m-1  rounded  bg-white/30 text-sm">
-
-
- </flex>
-
-      <textarea
-        name="text"
-        placeholder="Write something..."
-        class="textarea textarea-bordered w-full bg-white/30"
-      ></textarea>
-
-      <input 
+      <input
         type="file"
         name="media"
-        class="file-input file-input-bordered w-full bg-white/30"
-      >
+        class="hidden"
+      />
+    </label>
 
-      <button class="btn btn-primary border border-black/30 bg-gradient-to-r from-white/20 to-blue-400/20 hover:from-white/30 hover:to-blue-400/30">
-        Post
-      </button>
+    <!-- Post button -->
+    <button
+      type="submit"
+      class="btn rounded-lg border border-blue-500/30 bg-gradient-to-r from-blue-500 to-blue-600 px-6 text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg"
+    >
+      Post
+    </button>
+  </div>
+</form>
 
-    </form>
-    
+
   </div>
   <div id="contents" class="flex flex-col p-3 w-full justify-center items-center">
             THIS IS SUPPOSED TO BE THE FEED PAGE. IT WILL HAVE A FEED OF ARTWORKS, ARTISTS, GALLERIES, AND AUCTIONS. IT WILL ALSO HAVE A SEARCH BAR AND FILTERS. IT WILL ALSO HAVE A SCAN PHOTO FOR SUGGESTIONS FEATURE. IT WILL ALSO HAVE AN ABOUT US SECTION.
@@ -241,10 +254,10 @@ function renderCart(items) {
     return `
 
    
-    <div class=" postui bg-white/20 rounded-md p-3 w-4/5 h-1/2 m-24 flex flex-col gap-2 items-center justify-center">
+    <div class=" postui bg-white/20 rounded-md p-3 w-4/5 h-1/2 m-8 flex flex-col gap-2 items-center justify-center">
         ${p.username ? `<div class="border border-white/30 shadow shadow-lg rounded bg-black/30"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>
 `:""}
-          <div id="tags" class="grid grid-cols-5 gap-2 text-sm">
+          <div id="tags" absolute left-5 class="grid grid-cols-5 gap-2 text-sm">
               <div id="postcriteria" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.postcriteria}</p></div>
               <div id="artmedium" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.artmedium}</p></div>
               <div id="vibe" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.vibe}</p></div>
@@ -254,7 +267,7 @@ function renderCart(items) {
        
         ${p.text ? `<p>${p.text}</p>` : ""}
         ${media}
-        <button class="interestBtn btn btn-sm btn-outline w-fit bg-white/30 border-black/30" data-postid="${p.id}">
+        <button class="interestBtn btn btn-sm btn-outline w-fit bg-white/30 border-black/70" data-postid="${p.id}">
           Interested
         </button>
         ${btn}

@@ -43,29 +43,26 @@
 
 </div>
         
-        <div class="shadow-lg rounded-md relative grid grid-cols-2 gap-2 ">
-            <div class="rounded-md  absolute inset-0 bg-white/20 bg-cover border-white/2 m-5 border-10"></div>
-            <div class=" rounded-md absolute top-40 inset-0 bg-white/10 shadow-lg m-10 border-4 flex items-center">
-                 <div id="buttonholder" class="rounded-md border opacity-0 animate-fade-in m-48 mt-48 p-10 items-center">
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FEED</button>
+        <div class="shadow-lg rounded-md relative grid grid-cols-2  ">
+            <div class="rounded-md justify-center items-center  absolute inset-0 bg-white/20 bg-cover border-white/2 m-5 border-10"></div>
+            <div class=" rounded-md justify-center items-center absolute top-40 h-96  inset-0 bg-white/10 shadow-lg m-10 border-4 flex items-center">
+                 <div id="buttonholder" class="rounded-md shadow-lg border animate-fade-in p-4 items-center">
+            <button onclick="document.getElementById('loginPrompt').showModal()" class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FEED</button>
             <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white  m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">ARTISTS</button>
+           
+           
+            <button onclick="document.getElementById('loginPrompt').showModal()" class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">SCAN PHOTO FOR SUGGESTIONS</button>
             <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white  m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">GALLERIES</button>
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">AUCTIONS</button>
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FILTER THROUGH MEDIUM</button>
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FILTER THROUGH ART STYLE</button>
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FILTER THROUGH EMOTIONS</button> 
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">SCAN PHOTO FOR SUGGESTIONS</button>
-            <br>
-            <button class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">ABOUT US</button>
+            <button onclick="document.getElementById('loginPrompt').showModal()" class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">ABOUT US</button>
             <br>
             </div>
+            <dialog id="loginPrompt" class="rounded-md p-6 bg-white/20 border-black/70 m-8 justify-center items-center w-96 h-48 shadow-lg backdrop:bg-black/50">
+  <p class="mb-4 text-center">Do you want to log in?</p>
+  <div class="flex gap-3 justify-center">
+    <button onclick="window.location.href='login.html'" class="border rounded-md px-4 py-1.5 hover:bg-white/50" style="background-color: rgb(159, 154, 179);">Login</button>
+    <button onclick="redirect()" class="border rounded-md px-4 py-1.5 hover:bg-white/50" style="background-color: rgb(159, 154, 179);">View as external visitor</button>
+  </div>
+</dialog>
                </div>
                
         
@@ -98,4 +95,17 @@
        
         
     </body>
+    <script>
+      function redirect() {
+    
+        window.location.href = "feed.html";
+      }
+
+      document.getElementById('loginPrompt').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.close();
+    }
+  });
+     // <!--button onclick="document.getElementById('loginPrompt').showModal()" class="bg-center w-96 hover:bg-white/90 hover:text-white m-5 border shadow-lg rounded-md" style="background-color: rgb(159, 154, 179);">FEED</button-->
+    </script>
 </html>

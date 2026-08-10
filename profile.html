@@ -36,6 +36,7 @@
       
            <div class="relative w-full m-5 mr-56 flex flex-col items-center p-6 gap-4">
              <div id="infoholder" class="text-center w-3/4 mt-20 ml-20 mr-32 pr-4 p-2 rounded-md bg-gradient-to-r from-white/10 to-[#e6e6fa8f] shadow-lg border border-black/20 flex flex-col gap-2">
+              <p>      </p>
                 <h id="name">Tasnia Rysa</h>
                 <p id="bio">an emerging artist</p>
                 <div class="w-full bg-gradient-to-r from-white/20 to-blue-400/20 flex flex-col gap-1 p-2 rounded-md">
@@ -49,7 +50,7 @@
              
             </div>
             <div id="dp" class="w-56 h-56 ml-8 mt-20 bg-white/20 rounded-md shadow-lg border-black/20 absolute top-5 left-20 p-2">
-                <img id="dpimg" src="https://scontent.fdac191-1.fna.fbcdn.net/v/t39.30808-6/687482392_1494633785630357_8525069656572596740_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGq9B8WTYHQkN5SXq5nfZTcDgNhfX87D74OA2F9fzsPvv-uFJWA9zl5Jzcbiesa1I7a-IOI0ooGhsIHgyRQH5st&_nc_ohc=jtpvyZxkjbwQ7kNvwE4Y2Ca&_nc_oc=AdoPBTH4MKLn2GOEpvcQiCYEtdt1rDghTClcERUOFCqaupxmMfKL8efIMeGf_c4EcJY&_nc_zt=23&_nc_ht=scontent.fdac191-1.fna&_nc_gid=pskKydsAs8-pQQGcjYKA-w&_nc_ss=7b2a8&oh=00_Af6A7UwWoFSuzTgl6TmDX100DqL7vHMrxpv3EpArAQUEow&oe=6A14AD47" class="w-92 h-92 rounded-md object-cover">
+                <img id="dpimg" class="w-92 h-92 rounded-md object-cover">
             </div>
 
             <div class="flex w-full">
@@ -199,7 +200,7 @@
  workinfo=JSON.parse(workinfo);
   preferences=JSON.parse(preferences);
   links=JSON.parse(links);
- document.getElementById("name").textContent=username;
+ document.getElementById("name").textContent="  "+username;
 document.getElementById("bio").textContent=bio;
 document.getElementById("workinfo").innerHTML=workinfo.map(info=>`<li>${info}</li>`).join("");
 document.getElementById("pref").innerHTML=preferences.map(info=>`<li>${info}</li>`).join("");

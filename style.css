@@ -8,6 +8,14 @@ body{
   
   
 }
+#buttonholder
+{
+  background: linear-gradient(to right, #adbcc4aa, #48545827);
+}
+#loginPrompt
+{
+  background: linear-gradient(to right, #cadfea82, #4854586d);
+}
 p
 {
   padding: 4px;
@@ -24,7 +32,7 @@ background: linear-gradient(to right, rgba(137, 136, 136, 0.881), rgba(255, 255,
   left:7%;           /* distance from left of wrapper */
   
   padding: 10px;
-  margin: 10px;
+  
   border-radius: 1px;
   
    border-color:rgb(193, 205, 205);

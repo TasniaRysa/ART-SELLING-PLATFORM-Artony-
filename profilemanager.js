@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 const session = require('express-session');
 const app = express();
-app.use(express.static(__dirname));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -15,6 +15,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+app.use(express.static(__dirname));
 
 
 
@@ -237,21 +238,7 @@ app.get("/showpost",(req,res)=>{
     res.json(posts);
 })
 
-app.post("/profileinfo",(req,res)=>{
 
-    
-    let {bio,workinfo,preferences, links, dp, username}=req.body;
-
-
-    const toArray = v => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
-    workinfo = toArray(workinfo);
-    preferences = toArray(preferences);
-    links = toArray(links);
-
-    const usr= db.prepare("SELECT username FROM login WHERE id=?").get(req.session.userId);
-    db.prepare("INSERT INTO profileinfo(userid,username,bio,workinfo,preferences,links,dp) VALUES (?,?,?,?,?,?,?)").run(req.session.userId,usr.username,bio,JSON.stringify(workinfo), JSON.stringify(preferences), JSON.stringify(links),dp);
-    res.redirect("/profile.html");
-})
 
 
 
@@ -428,7 +415,20 @@ return res.redirect("/form.html");
 
 
 
+app.post("/profileinfo", (req, res) => {
+    let { bio, workinfo, preferences, links, dp, username } = req.body;
 
+    const toArray = v => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
+    workinfo = toArray(workinfo);
+    preferences = toArray(preferences);
+    links = toArray(links);
+
+    const usr = db.prepare("SELECT username FROM login WHERE id=?").get(req.session.userId);
+    db.prepare("INSERT INTO profileinfo(userid,username,bio,workinfo,preferences,links,dp) VALUES (?,?,?,?,?,?,?)")
+        .run(req.session.userId, usr.username, bio, JSON.stringify(workinfo), JSON.stringify(preferences), JSON.stringify(links), dp);
+
+    res.redirect("/profile.html");
+})
 
 app.listen(3000,()=>{
     console.log("server started on port 3000 at http://localhost:3000/index.html");
