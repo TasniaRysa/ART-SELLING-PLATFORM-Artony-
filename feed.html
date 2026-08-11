@@ -44,14 +44,18 @@
   
   <a href="" class="text-white/70 text-sm hover:text-white transition">About us</a>
 
-<button id="cartBtn" class="text-white/70 text-sm hover:text-white transition text-underline">
+<button id="cartBtn" onclick="window.location.href='cart.html'" class="hover:bg-white/10 text-white/70 text-sm hover:text-white transition text-underline">
+   Cart
+</button>
+
+<button id="profile" onclick="window.location.href='profile.html'" class="hover:bg-white/10 text-white/70 text-sm hover:text-white transition text-underline">
    Cart
 </button>
 
 
 <div class="avatar">
   <div class="w-12 h-12 rounded-full">
-    <img src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"  class="w-12 h-12 rounded-full">
+    <a href="profile.html"><img id="navdp" src=""  class="w-12 h-12 rounded-full"></a>
   </div>
 </div>
 
@@ -76,10 +80,10 @@
 
 </div>
 
-        <div id="mainfeed" class="h-screen overflow-y-auto rounded w-5/6">
+        <div id="mainfeed" class="h-screen items-center justify-center overflow-y-auto rounded w-5/6">
           <div 
     id="postBox"
-    class="w-full h-1/2 transition-all duration-500 rounded ease-in-out"
+    class="w-full h-1/2 transition-all items-center justify-center duration-500 rounded ease-in-out"
   >
   
 <form
@@ -99,9 +103,10 @@
       class="select select-bordered select-sm rounded-lg border-white/30 bg-white/30 text-sm backdrop-blur-sm focus:border-blue-400 focus:outline-none"
     >
       <option disabled selected>Post type</option>
-      <option value="public">Public</option>
-      <option value="friends">Friends</option>
-      <option value="private">Only me</option>
+      <option value="seller">seller post</option>
+      <option value="general">general</option>
+      <option value="buyerpost">buyer post</option>
+
     </select>
   </div>
 
@@ -111,6 +116,37 @@
     placeholder="What's on your mind?"
     class="textarea textarea-bordered min-h-32 w-full resize-none rounded-xl border-white/30 bg-white/20 text-base placeholder:text-gray-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/20"
   ></textarea>
+
+  <!-- Extra post fields -->
+  <div class="mt-3 grid grid-cols-2 gap-3">
+    <input
+      type="text"
+      name="vibe"
+      placeholder="Vibe"
+      class="input input-bordered rounded-lg border-white/30 bg-white/20 text-sm placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+    />
+
+    <input
+      type="text"
+      name="artmedium"
+      placeholder="Art medium"
+      class="input input-bordered rounded-lg border-white/30 bg-white/20 text-sm placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+    />
+
+    <input
+      type="text"
+      name="sellerlocation"
+      placeholder="Seller location"
+      class="input input-bordered rounded-lg border-white/30 bg-white/20 text-sm placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+    />
+
+    <input
+      type="text"
+      name="keywords"
+      placeholder="Keywords"
+      class="input input-bordered rounded-lg border-white/30 bg-white/20 text-sm placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+    />
+  </div>
 
   <!-- Bottom controls -->
   <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -141,9 +177,34 @@
 
 
   </div>
-  <div id="contents" class="flex flex-col p-3 w-full justify-center items-center">
-            THIS IS SUPPOSED TO BE THE FEED PAGE. IT WILL HAVE A FEED OF ARTWORKS, ARTISTS, GALLERIES, AND AUCTIONS. IT WILL ALSO HAVE A SEARCH BAR AND FILTERS. IT WILL ALSO HAVE A SCAN PHOTO FOR SUGGESTIONS FEATURE. IT WILL ALSO HAVE AN ABOUT US SECTION.
+  <div id="contents" class="flex flex-col p-3 m-8 w-full justify-center items-center">
 
+
+
+            <div class=" postui bg-white/20 rounded-md p-3 w-4/5  m-8 flex flex-col gap-2 items-center justify-center">
+       <div class="border border-white/30 shadow shadow-lg rounded bg-black/30 flex items-center gap-2 p-1">
+  <a href="/profile.html?userid=${p.userid}" class="flex items-center gap-2">
+    <img src='https://img.daisyui.com/images/profile/demo/yellingcat@192.webp' class="w-8 h-8 rounded-full object-cover">
+    <p>TASNIA RYSA</p>
+  </a>
+</div>
+          <div id="tags" absolute left-5 class="grid grid-cols-5 gap-2 text-sm">
+              <div id="postcriteria" class="bg-white/20 rounded border-black/20 shadow-lg"><p>SELLER POST</p></div>
+              <div id="artmedium" class="bg-white/20 rounded border-black/20 shadow-lg"><p>ACRYLIC</p></div>
+              <div id="vibe" class="bg-white/20 rounded border-black/20 shadow-lg"><p>MOODY</p></div>
+              <div id="keywords" class="bg-white/20 rounded border-black/20 shadow-lg"><p>DARK AESTHETICS</p></div>
+              </div>   
+     
+       
+        <p>DEMO SELLER POST</p>
+        <img src="https://i.pinimg.com/736x/c2/41/2b/c2412bd884ee89d3e3037cfd5ba20f3b.jpg"  class="w-3/4 h-96 object-contain rounded-md">
+        <button class="interestBtn btn btn-sm btn-outline w-fit bg-white/30 border-black/70" data-postid="${p.id}">
+          Interested
+        </button>
+        <button class="btn btn-sm btn-outline w-fit">add to cart</button>
+        
+        <span class="text-xs opacity-60 bg-black/30 border-black/10">12am</span>
+      </div>
 
     <div id="cartList" class="hidden flex flex-col gap-3 w-full"></div>
 
@@ -151,6 +212,9 @@
     </div>
 
     <script>
+
+
+
 
 
       let cartOpen = false;
@@ -213,6 +277,15 @@ function renderCart(items) {
     });
   });
 }
+
+
+function loaddp(){
+  fetch("/profile", { method: "GET" })
+    .then(res => res.json())
+    .then(data => {
+     document.getElementById("navdp").src = data.dp;
+    });
+};
       document.getElementById("forcontent").addEventListener("submit", async function (e) {
   e.preventDefault();
   const formData = new FormData(this);
@@ -238,7 +311,7 @@ function renderCart(items) {
   list.innerHTML = post.map(p => {
     let media = "";
     if (p.mediatype === "image") {
-      media = `<img src="${p.imgurl}"  class="w-3/4 h-96 object-cover rounded-md">`;
+      media = `<img src="${p.imgurl}"  class="w-3/4 h-96 object-contain rounded-md">`;
     } else if (p.mediatype === "video") {
       media = `<video controls class="w-3/4 h-96 object-cover rounded-md">
         <source src="${p.imgurl}" type="video/mp4">
@@ -254,9 +327,13 @@ function renderCart(items) {
     return `
 
    
-    <div class=" postui bg-white/20 rounded-md p-3 w-4/5 h-1/2 m-8 flex flex-col gap-2 items-center justify-center">
-        ${p.username ? `<div class="border border-white/30 shadow shadow-lg rounded bg-black/30"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>
-`:""}
+    <div class=" postui bg-white/20 rounded-md p-3 w-4/5  m-8 flex flex-col gap-2 items-center justify-center">
+       ${p.username ? `<div class="border border-white/30 shadow shadow-lg rounded bg-black/30 flex items-center gap-2 p-1">
+  <a href="/profile.html?userid=${p.userid}" class="flex items-center gap-2">
+    <img src="${p.dp || 'https://img.daisyui.com/images/profile/demo/yellingcat@192.webp'}" class="w-8 h-8 rounded-full object-cover">
+    <p>${p.username}</p>
+  </a>
+</div>` : ""}
           <div id="tags" absolute left-5 class="grid grid-cols-5 gap-2 text-sm">
               <div id="postcriteria" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.postcriteria}</p></div>
               <div id="artmedium" class="bg-white/20 rounded border-black/20 shadow-lg"><p>${p.artmedium}</p></div>
@@ -305,10 +382,8 @@ function renderCart(items) {
   });
 }
   postloader();
+  loaddp();
     </script>
   
 
 </body>
-
-
-  

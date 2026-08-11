@@ -20,10 +20,18 @@
     </button>
   </div>
   <div class="flex-1">
-    <a class="btn btn-ghost text-xl ">PROFILE</a>
+    <a class="btn btn-ghost text-xl hover:bg-white/10 ">PROFILE</a>
   </div>
   <div class="flex-none">
-    <button id="cartBtn" class="btn btn-ghost"> Cart</button>
+    <button id="cartBtn" class="btn btn-ghost hover:bg-white/10"> Cart</button>
+</div>
+
+ <div class="flex-none">
+    <a id="feed" href="feed.html" class="text-black text-underline hover:bg-white/10"> feed</a>
+</div>
+<div class="flex-none">
+    <a id="edit" href="form.html" class="text-black text-underline hover:bg-white/10"> update/change profile info</a>
+</div>
 </div>
   <div class="flex-none">
     <button class="btn btn-square btn-ghost">
@@ -186,13 +194,12 @@
   
  
  async function loadprofile()
- {
-
+{
    const params = new URLSearchParams(window.location.search);
    const targetId = params.get("userid");
 
    const url = targetId ? `/profileget?userid=${targetId}` : "/profile";
-   const res = await fetch("/profile",{
+   const res = await fetch(url,{
     method:"GET"
   })
  const data= await res.json();
@@ -222,12 +229,16 @@ if (dp) {
 });
 
  async function loadposts()
- {
-  const res=await fetch("/showpost",{
+{
+  const params = new URLSearchParams(window.location.search);
+  const targetId = params.get("userid");
+
+  const url = targetId ? `/showpost?userid=${targetId}` : "/showpost";
+  const res = await fetch(url, {
     method:"GET"
   })
 
-  let post=await res.json();
+  let post = await res.json();
   renderpost(post);
 }
   function renderpost(post)
@@ -237,7 +248,7 @@ if (dp) {
   list.innerHTML = post.map(p => {
     let media = "";
     if (p.mediatype === "image") {
-      media = `<img src="${p.imgurl}" class="w-full h-auto rounded-md">`;
+      media = `<img src="${p.imgurl}" class="w-full h-96 object-contain rounded-md">`;
     } else if (p.mediatype === "video") {
       media = `<video controls class="w-full h-auto rounded-md">
         <source src="${p.imgurl}" type="video/mp4">

@@ -96,7 +96,7 @@ try {
 db.exec(
     `CREATE TABLE IF NOT EXISTS profileinfo(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userid INTEGER NOT NULL,
+    userid INTEGER NOT NULL UNIQUE,
    username TEXT  NOT NULL,
    bio TEXT,
    workinfo TEXT,
@@ -108,6 +108,7 @@ db.exec(
 )
    `
 );
+//db.exec(`DROP TABLE IF EXISTS profileinfo`);
 
 db.exec(
     `CREATE TABLE IF NOT EXISTS cartinfo(
@@ -232,9 +233,11 @@ app.get("/skipform", (req, res) => {
 });
 
 app.get("/showpost",(req,res)=>{
-    
-     const posts= db.prepare("SELECT * FROM posts WHERE userid=? ORDER BY timestamp DESC ").all(req.session.userId);
-    
+    const targetId = req.query.userid || req.session.userId;
+    if (!targetId) {
+        return res.status(401).json({ message: "not logged in" });
+    }
+    const posts = db.prepare("SELECT * FROM posts WHERE userid=? ORDER BY timestamp DESC ").all(targetId);
     res.json(posts);
 })
 
@@ -245,9 +248,9 @@ app.get("/showpost",(req,res)=>{
 app.get("/post", async (req, res) => {
     const userId = req.session.userId;
 
-    const posts = await db.prepare(`SELECT posts.*, login.username FROM posts, login 
-        WHERE posts.userid = login.id`).all();
-
+    const posts = await db.prepare(`SELECT posts.*, login.username, profileinfo.dp FROM posts
+    JOIN login ON posts.userid = login.id
+    LEFT JOIN profileinfo ON posts.userid = profileinfo.userid`).all();
     if (!userId) {
         // not logged in, just return by recency
         posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart | ARTONY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --radius-md: 14px;
+      --shadow-low: 0 2px 8px rgba(0,0,0,0.18);
+      --shadow-mid: 0 8px 20px rgba(0,0,0,0.25);
+      --shadow-high: 20px 25px 55px rgba(68,68,88,0.30);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: #dcd7e8;
+    }
+
+    #mainfeed {
+      position: fixed;
+      top: 12%;
+      left: 7%;
+      width: 86%;
+      height: 80vh;
+      padding: 18px;
+      border: 1px solid rgba(193,205,205,0.8);
+      border-radius: var(--radius-md);
+      background: linear-gradient(
+        to right,
+        rgba(137,136,136,0.88),
+        rgba(255,255,255,0.78)
+      );
+      box-shadow: var(--shadow-high);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    #cartList > .cart-item {
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-low);
+      transition: transform .25s ease, opacity .3s ease, box-shadow .25s ease;
+    }
+
+    #cartList > .cart-item:hover {
+      box-shadow: var(--shadow-mid);
+      transform: translateY(-2px);
+    }
+
+    .cart-item.removing {
+      opacity: 0;
+      transform: translateX(35px) scale(.97);
+    }
+
+    .media-frame {
+      background: rgba(255,255,255,.18);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .media-frame img,
+    .media-frame video {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      #mainfeed {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: calc(100% - 24px);
+        height: auto;
+        min-height: 80vh;
+        margin: 85px 12px 20px;
+      }
+
+      .media-frame img,
+      .media-frame video {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background artwork -->
+  <div
+    class="fixed inset-0 bg-cover bg-center opacity-55"
+    style="background-image:url('https://i.pinimg.com/1200x/8e/9c/1b/8e9c1b9596368d80c25d66691e86eda5.jpg');">
+  </div>
+
+  <div
+    class="fixed right-0 top-0 w-1/2 h-full bg-cover bg-center opacity-35"
+    style="background-image:url('https://i.pinimg.com/736x/c2/41/2b/c2412bd884ee89d3e3037cfd5ba20f3b.jpg');">
+  </div>
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 right-0 z-50 h-14 w-full
+              flex items-center px-6 gap-5
+              bg-black/40 backdrop-blur-sm
+              border-b border-white/10 shadow-lg">
+
+    <a href="/" class="text-white font-semibold tracking-widest mr-auto">
+      ARTONY
+    </a>
+
+    <a href="/" class="text-white/70 text-sm hover:text-white transition">
+      Home
+    </a>
+
+    <a href="/about.html" class="text-white/70 text-sm hover:text-white transition">
+      About us
+    </a>
+
+    <button
+      onclick="window.location.href='/cart.html'"
+      class="text-white text-sm underline underline-offset-4">
+      Cart
+    </button>
+
+    <div class="w-10 h-10 rounded-full overflow-hidden border border-white/30">
+      <img
+        src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
+        class="w-full h-full object-cover"
+        alt="Profile">
+    </div>
+  </nav>
+
+  <!-- Main translucent container -->
+  <main id="mainfeed" class="overflow-y-auto">
+
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-800">
+          Your Cart
+        </h1>
+        <p id="cartCount" class="text-sm text-gray-600 mt-1">
+          Loading items...
+        </p>
+      </div>
+
+      <button
+        onclick="window.location.href='/'"
+        class="rounded-lg border border-white/40 bg-white/25
+               px-4 py-2 text-sm text-gray-700
+               shadow transition hover:bg-white/40">
+        Continue browsing
+      </button>
+    </div>
+
+    <div
+      id="cartList"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    </div>
+
+    <div id="emptyCart" class="hidden text-center py-24">
+      <div class="text-5xl mb-4">🛒</div>
+      <h2 class="text-xl font-semibold text-gray-700">
+        Your cart is empty
+      </h2>
+      <p class="text-sm text-gray-600 mt-2">
+        Add some artwork from the marketplace.
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    /*
+      Temporary hardcoded pricing.
+
+      Later, when /cartitems returns:
+        price
+
+      simply replace:
+        getPrice(item)
+
+      with:
+        return Number(item.price);
+    */
+    const DEFAULT_PRICE = 1500;
+
+    function getPrice(item) {
+      // Temporary price until backend has a price column.
+      return DEFAULT_PRICE;
+    }
+
+    function formatPrice(amount) {
+      return `৳ ${Number(amount).toLocaleString("en-BD")}`;
+    }
+
+    function escapeHTML(value) {
+      if (value === null || value === undefined) return "";
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadCart() {
+      const list = document.getElementById("cartList");
+      const emptyCart = document.getElementById("emptyCart");
+      const cartCount = document.getElementById("cartCount");
+
+      try {
+        const res = await fetch("/cartitems", {
+          method: "GET"
+        });
+
+        if (res.status === 401) {
+          list.innerHTML = "";
+          cartCount.textContent = "Please log in to view your cart.";
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to load cart");
+        }
+
+        const items = await res.json();
+
+        cartCount.textContent =
+          `${items.length} item${items.length === 1 ? "" : "s"}`;
+
+        if (!items.length) {
+          list.innerHTML = "";
+          emptyCart.classList.remove("hidden");
+          return;
+        }
+
+        emptyCart.classList.add("hidden");
+        renderCart(items);
+
+      } catch (error) {
+        console.error(error);
+
+        cartCount.textContent = "Could not load your cart.";
+
+        list.innerHTML = `
+          <div class="md:col-span-2 xl:col-span-3
+                      rounded-xl bg-red-500/10 border border-red-400/30
+                      p-6 text-center text-red-700">
+            Something went wrong while loading your cart.
+          </div>
+        `;
+      }
+    }
+
+    function renderCart(items) {
+      const list = document.getElementById("cartList");
+
+      list.innerHTML = items.map(item => {
+
+        let media = `
+          <div class="media-frame h-[230px] flex items-center justify-center">
+            <span class="text-gray-500 text-sm">
+              No preview available
+            </span>
+          </div>
+        `;
+
+        if (item.mediatype === "image" && item.imgurl) {
+          media = `
+            <div class="media-frame">
+              <img
+                src="${escapeHTML(item.imgurl)}"
+                alt="Artwork"
+                loading="lazy"
+                onerror="this.parentElement.innerHTML='<div class=&quot;h-[230px] flex items-center justify-center text-gray-500 text-sm&quot;>Image unavailable</div>';">
+            </div>
+          `;
+        }
+
+        else if (item.mediatype === "video" && item.imgurl) {
+          media = `
+            <div class="media-frame">
+              <video controls>
+                <source
+                  src="${escapeHTML(item.imgurl)}"
+                  type="video/mp4">
+              </video>
+            </div>
+          `;
+        }
+
+        const price = getPrice(item);
+
+        return `
+          <article
+            class="cart-item bg-white/25 backdrop-blur-md
+                   border border-white/30 p-4 flex flex-col gap-3"
+            data-postid="${escapeHTML(item.postid)}">
+
+            ${media}
+
+            <div class="flex flex-col gap-1">
+              <p class="text-xs uppercase tracking-wider text-gray-500">
+                Artwork
+              </p>
+
+              ${
+                item.text
+                  ? `<p class="text-gray-800 font-medium leading-relaxed">
+                       ${escapeHTML(item.text)}
+                     </p>`
+                  : `<p class="text-gray-600 italic">
+                       Untitled artwork
+                     </p>`
+              }
+            </div>
+
+            <div class="flex items-center justify-between mt-auto pt-2">
+              <span class="text-lg font-semibold text-gray-800">
+                ${formatPrice(price)}
+              </span>
+
+              <span class="text-xs px-2 py-1 rounded-full
+                           bg-black/10 text-gray-600">
+                1 item
+              </span>
+            </div>
+
+            <div class="flex gap-2 pt-1">
+              <button
+                class="confirmOrderBtn flex-1 rounded-lg
+                       bg-gradient-to-r from-blue-500 to-blue-600
+                       px-4 py-2.5 text-sm font-medium text-white
+                       shadow-md transition
+                       hover:-translate-y-0.5 hover:shadow-lg"
+                data-postid="${escapeHTML(item.postid)}">
+
+                Confirm Order
+              </button>
+
+              <button
+                class="removeCartBtn rounded-lg
+                       border border-red-400/30
+                       bg-red-500/10
+                       px-4 py-2.5 text-sm text-red-700
+                       transition hover:bg-red-500/20"
+                data-postid="${escapeHTML(item.postid)}">
+
+                Remove
+              </button>
+            </div>
+
+          </article>
+        `;
+      }).join("");
+
+      attachCartEvents();
+    }
+
+    function attachCartEvents() {
+
+      document.querySelectorAll(".confirmOrderBtn").forEach(button => {
+        button.addEventListener("click", function () {
+          const postid = this.dataset.postid;
+
+          window.location.href =
+            `/order.html?postid=${encodeURIComponent(postid)}`;
+        });
+      });
+
+      document.querySelectorAll(".removeCartBtn").forEach(button => {
+        button.addEventListener("click", async function () {
+
+          const button = this;
+          const postid = button.dataset.postid;
+          const card = button.closest(".cart-item");
+
+          button.disabled = true;
+          button.textContent = "Removing...";
+
+          try {
+            const res = await fetch("/removefromcart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ postid })
+            });
+
+            if (!res.ok) {
+              throw new Error("Could not remove item");
+            }
+
+            // Slight fade + slide transition.
+            card.classList.add("removing");
+
+            setTimeout(() => {
+              card.remove();
+
+              const remaining =
+                document.querySelectorAll(".cart-item").length;
+
+              document.getElementById("cartCount").textContent =
+                `${remaining} item${remaining === 1 ? "" : "s"}`;
+
+              if (remaining === 0) {
+                document.getElementById("emptyCart")
+                  .classList.remove("hidden");
+              }
+            }, 300);
+
+          } catch (error) {
+            console.error(error);
+
+            button.disabled = false;
+            button.textContent = "Remove";
+
+            alert("Could not remove this item.");
+          }
+        });
+      });
+    }
+
+    loadCart();
+  </script>
+
+</body>
+</html>
