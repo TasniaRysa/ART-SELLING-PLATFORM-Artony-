@@ -1,8 +1,19 @@
+require("dotenv").config()
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const Database = require('better-sqlite3');
 const bcrypt = require('bcrypt');
+const cookieParser = require("cookie-parser");
+const { doubleCsrf } = require("csrf-csrf");
+const rateLimit = require("express-rate-limit");
+
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per IP per window
+  message: { message: "Too many attempts, please try again later" }
+});
 
 const session = require('express-session');
 const app = express();
@@ -11,12 +22,42 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
-    secret: "change-this-to-a-real-secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+     cookie: {
+        sameSite: "strict",
+        secure: false
+    }
 }));
+
+
+app.use((req, res, next) => {
+  const blocked = ["/profiles.db", "/profilemanager.js", "/package.json", "/package-lock.json", "/.env", "/README.md"];
+  if (blocked.includes(req.path)) {
+    return res.status(403).end();
+  }
+  next();
+});
 app.use(express.static(__dirname));
 
+//app.use(express.static(__dirname));
+
+
+app.use(cookieParser());
+
+const {
+    generateCsrfToken,
+    doubleCsrfProtection
+} = doubleCsrf({
+    getSecret: () => process.env.SESSION_SECRET,
+    getSessionIdentifier: (req) => req.session.id,
+    cookieName: "csrf-token",
+    cookieOptions: { sameSite: "strict", secure: false },
+    size: 64,
+    getCsrfTokenFromRequest: (req) =>
+        req.headers["x-csrf-token"] || req.body["x-csrf-token"]
+});
 
 
 const db=new Database("profiles.db");
@@ -92,6 +133,12 @@ try {
   
 }
 
+try {
+    db.exec(`ALTER TABLE posts ADD COLUMN price TEXT DEFAULT NULL`);
+} catch (e) {
+  // column already exists
+}
+
 
 db.exec(
     `CREATE TABLE IF NOT EXISTS profileinfo(
@@ -135,21 +182,45 @@ const storage=multer.diskStorage({
     }
 })
 
-const upload=multer({storage:storage});
-app.post("/upload",upload.single("dp"),(req,res)=>{
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 100 * 1024 * 1024 }, 
+    fileFilter: function (req, file, cb) {
+        const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4"];
+        if (allowed.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Unsupported file type"));
+        }
+    }
+});
+app.post("/upload",doubleCsrfProtection,upload.single("dp"),(req,res)=>{
     res.json(
         {imgurl:"/uploads/"+req.file.filename}
     )
     db.prepare("UPDATE profileinfo SET dp=? WHERE userid=?").run("/uploads/"+req.file.filename,req.session.userId);
 })
 
+app.post("/logout", doubleCsrfProtection, (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Could not log out" });
+        }
+        res.clearCookie("connect.sid"); // default express-session cookie name
+        res.redirect("index.html");
+    });
+});
 
+app.get("/csrf-token", (req, res) => {
+    const token = generateCsrfToken(req, res);
+    res.json({ csrfToken: token });
+});
 app.get("/cartitems", (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "not logged in" });
     }
     const items = db.prepare(`
-        SELECT cartinfo.postid, posts.text, posts.imgurl, posts.mediatype
+        SELECT cartinfo.postid, posts.text, posts.imgurl, posts.mediatype, posts.price
         FROM cartinfo
         JOIN posts ON cartinfo.postid = posts.id
         WHERE cartinfo.userid = ?
@@ -159,7 +230,7 @@ app.get("/cartitems", (req, res) => {
     res.json(items);
 });
 
-app.post("/removefromcart", (req, res) => {
+app.post("/removefromcart",doubleCsrfProtection, (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "not logged in" });
     }
@@ -171,13 +242,14 @@ app.post("/removefromcart", (req, res) => {
         .run(req.session.userId, postid);
     res.json({ removed: true });
 });
-app.post("/contentpost", upload.single("media"), (req, res) => {
+app.post("/contentpost",doubleCsrfProtection, upload.single("media"), (req, res) => {
     const text = req.body.text || null;
     const postcriteria = req.body.postcriteria || null;
     const vibe = req.body.vibe || null;
     const artmedium = req.body.artmedium || null;
     const sellerlocation = req.body.sellerlocation || null;
     const keywords = req.body.keywords || null;
+    const price = req.body.price || null;
     const file = req.file || null;
 
     if (!text && !file) {
@@ -188,14 +260,14 @@ app.post("/contentpost", upload.single("media"), (req, res) => {
     const mediatype = file ? file.mimetype.split("/")[0] : null;
 
     const insert = db.prepare(
-        "INSERT INTO posts(userid, text, imgurl, mediatype, postcriteria, vibe, artmedium, sellerlocation, keywords) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO posts(userid, text, imgurl, mediatype, postcriteria, vibe, artmedium, sellerlocation, keywords, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
-    insert.run(req.session.userId, text, mediaurl, mediatype, postcriteria, vibe, artmedium, sellerlocation, keywords);
+    insert.run(req.session.userId, text, mediaurl, mediatype, postcriteria, vibe, artmedium, sellerlocation, keywords, price);
 
     res.json({ message: "Post created successfully" });
 });
 
-app.post("/addtocart", (req, res) => {
+app.post("/addtocart",doubleCsrfProtection, (req, res) => {
 
     if (!req.session.userId) {
         return res.status(401).json({ message: "not logged in" });
@@ -212,7 +284,7 @@ app.post("/addtocart", (req, res) => {
 })
 
 
-app.post("/interest", (req, res) => {
+app.post("/interest",doubleCsrfProtection, (req, res) => {
       if (!req.session.userId) {
         return res.status(401).json({ message: "not logged in" });
     }
@@ -295,7 +367,7 @@ app.get("/post", async (req, res) => {
     res.json(posts);
 });
 
-app.post("/submit", async (req, res) => {
+app.post("/submit",doubleCsrfProtection, authLimiter, async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -359,7 +431,7 @@ app.get("/profile", (req, res) => {
 })
 
 // ================= LOGIN =================
-app.post("/login", async (req, res) => {
+app.post("/login",doubleCsrfProtection,authLimiter, async (req, res) => {
 
     const { username, password } = req.body;
 
@@ -418,7 +490,7 @@ return res.redirect("/form.html");
 
 
 
-app.post("/profileinfo", (req, res) => {
+app.post("/profileinfo",doubleCsrfProtection, (req, res) => {
     let { bio, workinfo, preferences, links, dp, username } = req.body;
 
     const toArray = v => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
@@ -433,6 +505,15 @@ app.post("/profileinfo", (req, res) => {
     res.redirect("/profile.html");
 })
 
-app.listen(3000,()=>{
-    console.log("server started on port 3000 at http://localhost:3000/index.html");
+
+app.use((err, req, res, next) => {
+    if (err) {
+        return res.status(400).json({ message: err.message });
+    }
+    next();
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`server started on port ${PORT} at http://localhost:${PORT}/index.html`)
 })

@@ -22,15 +22,22 @@
   <div class="flex-1">
     <a class="btn btn-ghost text-xl hover:bg-white/10 ">PROFILE</a>
   </div>
+  <div id="forspacing" class="grid grid-cols-4 w-1/3 m-4">
   <div class="flex-none">
-    <button id="cartBtn" class="btn btn-ghost hover:bg-white/10"> Cart</button>
+    <button id="cartBtn" onclick="window.location.href='cart.html'" class="btn btn-ghost hover:bg-white/10"> Cart   </button>
 </div>
 
  <div class="flex-none">
-    <a id="feed" href="feed.html" class="text-black text-underline hover:bg-white/10"> feed</a>
+    <a id="feed" href="feed.html" class="text-black btn btn-ghost text-underline hover:bg-white/10"> feed   </a>
 </div>
 <div class="flex-none">
-    <a id="edit" href="form.html" class="text-black text-underline hover:bg-white/10"> update/change profile info</a>
+    <a id="edit" href="form.html" class="text-black btn btn-ghost text-underline hover:bg-white/10">     change profile info</a>
+
+</div>
+<button
+   id="logoutBtn" class="flex-none hover:bg-white/10 text-white/70 text-sm hover:text-white transition text-underline">
+   Log out
+</button>
 </div>
 </div>
   <div class="flex-none">
@@ -118,7 +125,7 @@
 <flex>
     <select name="postcriteria" class="select select-bordered select-sm m-1 w-1/5 bg-white/30">
   <option value="">Select post type</option>
-  <option value="sellerpost">Seller Post</option>
+  <option value="seller">Seller Post</option>
   <option value="buyerpost">Buyer Post</option>
   <option value="general">General</option>
   <option value="question">Question</option>
@@ -129,6 +136,7 @@
 <input type="text" name="vibe" placeholder="Vibe" 
   class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
 
+
 <input type="text" name="artmedium" placeholder="Art medium" 
   class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
 
@@ -137,6 +145,10 @@
 
 <input type="text" name="keywords" placeholder="Keywords" 
   class="input input-bordered input-sm w-1/5 m-1 bg-white/30 text-sm">
+
+
+  <input id="price" type="text" name="price" placeholder="price of your item" 
+ class="input input-bordered input-sm bg-white/30 text-sm transition-all duration-500 ease-in-out overflow-hidden m-2 max-w-0 opacity-0 p-0 border-0">
 
 
   <textarea name="text" placeholder="Write something..." 
@@ -167,6 +179,29 @@
 
 <div id="postList" class="flex flex-col gap-3 w-full"></div>
 <script>
+  let csrfToken = null;
+async function loadCsrfToken() {
+  const res = await fetch("/csrf-token");
+  const data = await res.json();
+  csrfToken = data.csrfToken;
+}
+loadCsrfToken();
+
+
+document.getElementById("logoutBtn").addEventListener("click", async function () {
+  try {
+    const res = await fetch("/logout", {
+      method: "POST",
+      headers: { "x-csrf-token": csrfToken }
+    });
+    if (res.ok) {
+      window.location.href = "/index.html";
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
   const toggleBtn = document.getElementById("togglePostBox");
   const postBox = document.getElementById("postBox");
 
@@ -221,7 +256,11 @@ if (dp) {
  document.getElementById("forcontent").addEventListener("submit", async function (e) {
   e.preventDefault();
   const formData = new FormData(this);
-  const res = await fetch("/contentpost", { method: "POST", body: formData });
+  const res = await fetch("/contentpost", { method: "POST", headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        },
+         body: formData });
   if (res.ok) {
     this.reset();
     loadposts();
@@ -255,11 +294,17 @@ if (dp) {
       </video>`;
     }
 
+    let priceTag = "";
+    if (p.postcriteria === "seller" && p.price) {
+      priceTag = `<span class="text-sm font-semibold bg-black/20 rounded px-2 py-1">৳ ${p.price}</span>`;
+    }
+
     return `
       <div class="bg-white/20 rounded-md p-3 flex flex-col gap-2">
         ${p.username ? `<div class="border border-black bg-black/50"><a href="/profile.html?userid=${p.userid}"><p>${p.username}</p></a></div>` : ""}
         ${p.text ? `<p>${p.text}</p>` : ""}
         ${media}
+        ${priceTag}
         <button class="interestBtn btn btn-sm btn-outline w-fit" data-postid="${p.id}">
           Interested
         </button>
@@ -272,7 +317,10 @@ if (dp) {
       const postid = this.dataset.postid;
       const res = await fetch("/interest", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        },
         body: JSON.stringify({ postid })
       });
       if (res.ok) {
@@ -283,23 +331,21 @@ if (dp) {
   });
 }
 
-  document.querySelector('select[name="postcriteria"]').addEventListener("change", function() {
-  const sellerField = document.getElementById("sellerlocation");
-  if (this.value === "sellerpost") {
-    sellerField.classList.remove("hidden");
-  } else {
-    sellerField.classList.add("hidden");
-  }
-});
+ 
 
 document.querySelector('select[name="postcriteria"]').addEventListener("change", function() {
   const sellerField = document.getElementById("sellerlocation");
+  const price= document.getElementById("price");
   if (this.value === "sellerpost") {
     sellerField.classList.remove("max-w-0", "opacity-0", "p-0", "border-0");
     sellerField.classList.add("max-w-xs", "opacity-100", "px-3", "py-1", "border");
+     price.classList.remove("max-w-0", "opacity-0", "p-0", "border-0");
+    price.classList.add("max-w-xs", "opacity-100", "px-3", "py-1", "border");
   } else {
     sellerField.classList.remove("max-w-xs", "opacity-100", "px-3", "py-1", "border");
     sellerField.classList.add("max-w-0", "opacity-0", "p-0", "border-0");
+     price.classList.add("max-w-0", "opacity-0", "p-0", "border-0");
+    price.classList.remove("max-w-xs", "opacity-100", "px-3", "py-1", "border");
   }
 });
  

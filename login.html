@@ -14,6 +14,7 @@
         <h class="text-3xl m-5 border border-white bg-white/70 p-2 rounded">LOGIN</h>
         <br>
         <form action="/login" method="POST">
+            <input type="hidden" name="x-csrf-token" id="csrfInput">
         <input type="text" placeholder="Username" name="username" class="border border-black m-5 p-2 rounded">
         <br>
         <input type="password" placeholder="Password" name="password" class="border border-black m-5 p-2 rounded">
@@ -40,6 +41,17 @@
 </div>
         </div>    
     </body>
+
+
+    <script>
+       
+  fetch("/csrf-token")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("csrfInput").value = data.csrfToken;
+    });
+
+    </script>
     
     
 </html>

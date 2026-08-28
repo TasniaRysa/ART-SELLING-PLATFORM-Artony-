@@ -3,3 +3,4 @@ uploads/
 *.db
 tempCodeRunnerFile.js
 raf files/
+*.env

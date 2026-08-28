@@ -41,6 +41,7 @@
             <p class="text-white/60 text-sm mb-6">A profile picture helps people recognize you on Artony.</p>
 
             <form id="profileForm" action="/profileinfo" method="POST" class="flex flex-col gap-3">
+                <input type="hidden" name="x-csrf-token" id="csrfInput">
 
                 <input type="text" placeholder="Bio" name="bio"
                     class="rounded-md border border-white/30 bg-white/10 text-white placeholder-white/50 p-2.5 focus:outline-none focus:border-white/70 transition">
@@ -81,7 +82,14 @@
     </div>
 
      <script>
-
+       let csrfToken = null;
+async function loadCsrfToken() {
+  const res = await fetch("/csrf-token");
+  const data = await res.json();
+  csrfToken = data.csrfToken;
+  document.getElementById("csrfInput").value = data.csrfToken;
+}
+loadCsrfToken();
         function changewindow() {
             window.location.href = "form.html";
         }
@@ -100,7 +108,10 @@
     const formData = new FormData();
     formData.append("dp", file);
 
-    const res = await fetch("/upload", { method: "POST", body: formData });
+    const res = await fetch("/upload", { method: "POST", headers: {
+  
+  "x-csrf-token": csrfToken
+},body: formData });
     const data = await res.json();
 
     document.getElementById("dpUrl").value = data.imgurl;

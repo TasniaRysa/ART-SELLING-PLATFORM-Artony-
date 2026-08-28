@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order | ARTONY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: #dcd7e8;
+    }
+
+    #orderBox {
+      position: fixed;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 480px;
+      padding: 28px;
+      border: 1px solid rgba(193,205,205,0.8);
+      border-radius: 14px;
+      background: linear-gradient(
+        to right,
+        rgba(137,136,136,0.88),
+        rgba(255,255,255,0.78)
+      );
+      box-shadow: 20px 25px 55px rgba(68,68,88,0.30);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    @media (max-width: 640px) {
+      #orderBox {
+        top: 10%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background collage, same images as cart.html -->
+  <div
+    class="fixed inset-0 bg-cover bg-center opacity-55"
+    style="background-image:url('https://i.pinimg.com/1200x/8e/9c/1b/8e9c1b9596368d80c25d66691e86eda5.jpg');">
+  </div>
+
+  <div
+    class="fixed right-0 top-0 w-1/2 h-full bg-cover bg-center opacity-35"
+    style="background-image:url('https://i.pinimg.com/736x/c2/41/2b/c2412bd884ee89d3e3037cfd5ba20f3b.jpg');">
+  </div>
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 left-0 right-0 z-50 h-14 w-full
+              flex items-center px-6 gap-5
+              bg-black/40 backdrop-blur-sm
+              border-b border-white/10 shadow-lg">
+
+    <a href="/" class="text-white font-semibold tracking-widest mr-auto">
+      ARTONY
+    </a>
+
+    <a href="/" class="text-white/70 text-sm hover:text-white transition">
+      Home
+    </a>
+
+    <a href="/cart.html" class="text-white/70 text-sm hover:text-white transition">
+      Back to cart
+    </a>
+  </nav>
+
+  <div class="h-16 w-full"></div>
+
+  <!-- Order form -->
+  <div id="orderBox">
+
+    <h1 class="text-2xl font-semibold text-gray-800 mb-5">
+      Confirm Your Order
+    </h1>
+
+    <p class="text-sm text-gray-600 mb-4">Ordering item #<span id="postidDisplay"></span></p>
+
+    <form id="orderForm" class="flex flex-col gap-4">
+
+      <div>
+        <label class="text-sm text-gray-700 mb-1 block">Delivery Address</label>
+        <textarea
+          name="address"
+          required
+          class="w-full rounded-lg border border-white/40 bg-white/40 p-2.5 text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:border-blue-400"
+          placeholder="Enter your full delivery address"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-700 mb-1 block">Mobile Number</label>
+        <input
+          type="tel"
+          name="mobile"
+          required
+          class="w-full rounded-lg border border-white/40 bg-white/40 p-2.5 text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:border-blue-400"
+          placeholder="e.g. 01XXXXXXXXX"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
+        Confirm Order
+      </button>
+
+    </form>
+
+    <div id="confirmationBox" class="hidden mt-4 rounded-lg bg-green-500/15 border border-green-400/40 p-3 text-center text-green-800 font-medium">
+      Order confirmed
+    </div>
+
+  </div>
+
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const postid = params.get("postid");
+
+  let csrfToken = null;
+  async function loadCsrfToken() {
+    const res = await fetch("/csrf-token");
+    const data = await res.json();
+    csrfToken = data.csrfToken;
+  }
+  loadCsrfToken();
+
+  document.getElementById("orderForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/removefromcart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        },
+        body: JSON.stringify({ postid })
+      });
+
+      if (!res.ok) {
+        throw new Error("Could not remove item from cart");
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+
+    document.getElementById("confirmationBox").classList.remove("hidden");
+  });
+</script>
+</body>
+</html>

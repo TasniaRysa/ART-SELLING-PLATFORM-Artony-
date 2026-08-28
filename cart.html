@@ -173,23 +173,19 @@
   </main>
 
   <script>
-    /*
-      Temporary hardcoded pricing.
 
-      Later, when /cartitems returns:
-        price
-
-      simply replace:
-        getPrice(item)
-
-      with:
-        return Number(item.price);
-    */
+    let csrfToken = null;
+async function loadCsrfToken() {
+  const res = await fetch("/csrf-token");
+  const data = await res.json();
+  csrfToken = data.csrfToken;
+}
+loadCsrfToken();
+   
     const DEFAULT_PRICE = 1500;
 
     function getPrice(item) {
-      // Temporary price until backend has a price column.
-      return DEFAULT_PRICE;
+      return item.price ? Number(item.price) : DEFAULT_PRICE;
     }
 
     function formatPrice(amount) {
@@ -385,7 +381,9 @@
             const res = await fetch("/removefromcart", {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "x-csrf-token": csrfToken
+
               },
               body: JSON.stringify({ postid })
             });
