@@ -15,18 +15,25 @@ COMPLETED FEATURES:
 6. FILTER BASED ON ART MEDIUM, THEME, VIBE
 7. CART AND ORDER CONFIRM IMPLEMENTATION
 
-IMPLEMENTATED BACKEND CONCEPTS:
-1. RATE LIMITING
-2. CSRF
-3. SESSION AND SAVING OF SESSION INFO
-4. AUTH
-5. DB RELATIONS
-6. FILE UPLOADING
-7. PASSWORD HASHING
-8. INPUT VALIDATION
-9. MIDDLEWARE CHECK
-10. REST API 
 
+
+Implemented Backend Concepts
+
+1.Authentication & session-based authorization
+2.Password hashing using bcrypt
+3.Session management
+4.CSRF protection
+5.Rate limiting
+6.Input validation
+7.Parameterized/prepared SQL queries
+8.Relational database design & foreign keys
+9.File upload handling with Multer
+10.HTTP cookie security configuration
+11.REST-style API endpoints
+12.Error handling & HTTP status codes
+13.Database schema creation/migration
+14.Preference-based recommendation/ranking algorithm
+15.Recency-based content ranking
 
 
 
